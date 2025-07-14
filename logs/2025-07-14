@@ -1,0 +1,89 @@
+## 🧠 `represent()` – Representing a Target Sum Using Signed Integers from 1 to n (Recursive / Backtracking)
+
+> This Python function determines whether a given integer `value` can be represented  
+> using the integers `1` through `n`, each with either a `+` or `-` sign.  
+> It returns a list of those signed integers if possible, using recursion and pruning.
+
+---
+
+### 📌 Key Concepts
+- **Recursive function** with clear base case
+- **Backtracking** to explore all sign combinations
+- **Pruning (early return)** for impossible cases
+- **Mathematical filtering** using `total = n(n+1)/2`
+- **Subset sum variant** with sign decisions
+- Strategy: Choose `+n` if value is positive, `-n` if value is negative
+
+---
+
+### 🧩 Function Definition
+```python
+def represent(n, value):
+    if n == 0 and value == 0:
+        return []
+
+    total = sum(range(1, n + 1))
+
+    # Prune: if value is impossible to reach
+    if abs(value) > total or (total - value) % 2 != 0:
+        return False
+
+    # Strategy: add or subtract n depending on current value
+    if value >= 0:
+        return represent(n - 1, value - n) + [n]
+    else:
+        return represent(n - 1, value + n) + [-n]
+
+### 🔁 Test & Print Result
+```python
+for v in (7, 15, 22, 33, 40, 47):
+    print(v, end='')
+    result = represent(9, v)
+    if not result:
+        print(' is not representable')
+    else:
+        print('=', end='')
+        for i in result:
+            if i < 0:
+                print(f'{i}', end='')
+            else:
+                print(f'+{i}', end='')
+        print()
+        
+### ✅ Output
+```python
+7=+1+2+3-4+5-6+7-8+9
+15=+1-2+3+4+5+6-7-8+9
+22=+1+2+3+4+5+6+7-8+9
+33 is not representable
+40 is not representable
+47 is not representable
+
+---
+
+### ✍️ Personal Thought Process & What I Learned
+At first, I was confused about this part of the code:
+
+if value >= 0:
+    return represent(n - 1, value - n) + [n]
+else:
+    return represent(n - 1, value + n) + [-n]
+    
+### I didn't understand:
+Why do we subtract n when value is positive?
+And where is that [n] or [-n] coming from?
+After some careful thinking and tracing the recursion by hand, I realized:
+n in the function always refers to the largest number we are currently deciding to use.
+We're working backwards: starting from n and going down to 1.
+If value is positive, we want to subtract n (i.e., use +n) to get closer to 0.
+If value is negative, we want to add n (i.e., use -n) to get closer to 0.
+[n] or [-n] is simply the record of the current decision at that recursion level, added to the final list.
+
+In other words:
+When value >= 0, we try +n and subtract it from the value.
+When value < 0, we try -n and add it to the value.
+The final list is built by accumulating these choices in reverse order.
+
+### 🧠 Summary Insight
+This problem helped me reinforce how recursion works top-down while the solution builds bottom-up.
+It also gave me deeper intuition on when and how to prune unpromising recursive paths based on simple math conditions.
